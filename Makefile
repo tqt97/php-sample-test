@@ -26,6 +26,9 @@ up:
 down:
 	docker-compose down
 
+restart:
+	docker compose down && docker compose up -d
+
 build:
 	docker-compose build
 
@@ -41,12 +44,30 @@ shell:
 db-shell:
 	docker exec -it $(DB_CONTAIN_NAME) mysql -u $(DB_USER) -p$(DB_PASS) $(DB_NAME)
 
+composer:
+	docker compose exec php composer install
+
 migrate: ## Chạy các SQL migrations
-	@echo "🚀 Đang chạy SQL migrations..."
-	@mkdir -p database/migrations/ # Đảm bảo thư mục tồn tại
-	# Create migration file if it doesn't exist, executed as a single shell command
-	@sh -c '[ ! -f database/migrations/001_create_users_table.sql ] && (echo "CREATE TABLE IF NOT EXISTS users (id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(255) NOT NULL, email VARCHAR(255) NOT NULL UNIQUE, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);" > database/migrations/001_create_users_table.sql && echo "✅ Đã tạo file migration mẫu: database/migrations/001_create_users_table.sql") || true'
-	@echo "Running migrations from database/migrations/..."
-	# Apply all SQL migrations found
-	@find database/migrations/ -name "*.sql" -type f -exec sh -c 'echo "--- Applying {} ---"; docker exec -i $(DB_CONTAIN_NAME) mysql -u $(DB_USER) -p$(DB_PASS) $(DB_NAME) < {}' \;
-	@echo "✅ Migrations applied successfully!"
+	./scripts/migrate.sh
+
+seed:
+	docker compose exec db sh -c 'mysql -u$$MYSQL_USER -p$$MYSQL_PASSWORD $$MYSQL_DATABASE < /var/www/html/database/seeders/001_seed_users.sql'
+
+migration:
+	@if [ -z "$(name)" ]; then \
+		echo "❌ Usage: make migration name=create_users_table"; \
+		exit 1; \
+	fi; \
+	filename=$$(date +%Y%m%d%H%M%S)_$(name).sql; \
+	mkdir -p database/migrations; \
+	cat <<EOF > database/migrations/$$filename
+-- Migration: $(name)
+-- Created at: $$(date)
+
+-- UP
+-- Write your SQL here
+
+-- DOWN
+-- Rollback SQL here
+EOF
+	echo "✅ Created migration: $$filename"
