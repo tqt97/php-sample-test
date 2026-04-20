@@ -1,0 +1,8 @@
+/* Custom Styles */
+body {
+    transition: background-color 0.3s ease;
+}
+
+#confirmModal {
+    backdrop-filter: blur(4px);
+}

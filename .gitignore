@@ -1,0 +1,41 @@
+# Composer dependencies
+vendor/
+composer.lock
+
+# Environment variables
+.env
+
+# Log files
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build artifacts
+/build/
+/dist/
+/out/
+
+# IDE specific files
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# Docker
+docker/volumes/
+docker/db/
+docker/php/
+
+# PHP configuration
+php.ini
+php-fpm.conf
+php-fpm.d/
+
+# Temporary files
+temp/
+tmp/
+
+# OS generated files
+.DS_Store
+Thumbs.db

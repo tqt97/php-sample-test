@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  php:
+    build:
+      context: .
+      dockerfile: docker/php/${PHP_VERSION:-8.2}/Dockerfile
+      args:
+        PHP_EXT_SET: ${PHP_EXT_SET:-full}
+    container_name: ${APP_NAME:-php-sample}-app
+    restart: unless-stopped
+    volumes:
+      - ./:/var/www/html
+    networks:
+      - app-network
+
+  nginx:
+    image: nginx:alpine
+    container_name: ${APP_NAME:-php-sample}-web
+    restart: unless-stopped
+    ports:
+      - "${APP_PORT:-80}:80"
+      - "${APP_SSL_PORT:-443}:443"
+    environment:
+      - APP_DOMAIN=${APP_DOMAIN:-localhost}
+      - APP_ROOT=${APP_ROOT:-}
+    volumes:
+      - ./:/var/www/html
+      - ./docker/nginx/default.conf:/etc/nginx/templates/default.conf.template
+      - ./docker/nginx/ssl:/etc/nginx/ssl
+    networks:
+      - app-network
+    depends_on:
+      - php
+
+  db:
+    image: mariadb:10.11
+    container_name: ${APP_NAME:-php-sample}-db
+    restart: unless-stopped
+    ports:
+      - "${DB_PORT:-3306}:3306"
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE:-app_db}
+      MYSQL_USER: ${DB_USERNAME:-db_user}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-db_pass}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-root_pass}
+    volumes:
+      - dbdata:/var/lib/mysql
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  dbdata:
+    driver: local
