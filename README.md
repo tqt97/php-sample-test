@@ -26,7 +26,7 @@ docker/php/
 ### 1. Khởi tạo nhanh
 
 ```bash
-chmod +x setup.sh generate-ssl.sh
+chmod +x setup.sh generate-ssl.sh scripts/migrate.sh
 ./setup.sh
 ```
 
@@ -75,16 +75,11 @@ Trong quá trình chạy `setup.sh`, bạn sẽ được hỏi:
 | `make build` | Xây dựng lại Image (dùng khi đổi bản PHP hoặc thêm extension) |
 | `make shell` | Vào Terminal của container PHP |
 | `make logs` | Xem nhật ký hoạt động |
-| `make db-shell` | Truy cập vào terminal của container MariaDB để chạy lệnh SQL trực tiếp
-|  `make migrate` | Chạy tất cả các file .sql trong thư mục database/migrations/ theo thứ tự tên file.
+| `make db-shell` | Truy cập vào terminal của container MariaDB để chạy lệnh SQL trực tiếp |
+| `make migrate` | Chạy tất cả các file .sql trong thư mục database/migrations/ theo thứ tự tên file |
 
 ## 🗄️ Quản lý Database
 
 ### Tạo bảng SQL (Migrations)
 
-Hệ thống hỗ trợ chạy các file SQL để tạo hoặc cập nhật cấu trúc bảng.
-
- 1. **Tạo thư mục:** Tạo thư mục `database/migrations/` trong thư mục gốc của dự án.
- 2. **Tạo file SQL:** Tạo các file `.sql` bên trong thư mục này. Đặt tên file theo thứ tự để đảm bảo chúng được chạy đúng thứ tự (ví dụ:
-      `001_create_users_table.sql`, `002_create_products_table.sql`).
-     - File `001_create_users_table.sql` đã được tạo sẵn để bạn bắt đầu.
+Hệ thống hỗ trợ chạy các file SQL để tạo hoặc cập nhật cấu trúc bảng `make migration name=create_users_table`
