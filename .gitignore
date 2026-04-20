@@ -25,7 +25,7 @@ yarn-error.log*
 # Docker
 docker/volumes/
 docker/db/
-docker/php/
+# docker/php/
 
 # PHP configuration
 php.ini
